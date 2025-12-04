@@ -1,0 +1,79 @@
+# Configuration for Abnormal Flight Detection Project
+
+# Data Paths
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  features_dir: "data/features"
+  train_folder_id: "1Scvz11KmgIt5dzmSMzS4MCv0IXnte2a-"
+  test_folder_id: "1l3LtAp0u2svJ46lBL80WwwABz7TllSXF"
+
+# Output Paths
+output:
+  figures_dir: "outputs/figures"
+  models_dir: "outputs/models"
+  results_dir: "outputs/results"
+
+# Data Processing Parameters
+preprocessing:
+  chunk_size: 100000  # For reading large CSV files
+  sample_size: null  # Set to integer for testing on subset, null for full data
+  random_state: 42
+
+# Feature Engineering Parameters
+features:
+  temporal:
+    - total_duration
+    - ground_time
+    - taxi_time
+    - cruise_time
+    - num_level_segments
+  spatial:
+    - total_distance
+    - altitude_max
+    - altitude_mean
+    - altitude_std
+    - num_altitude_crossings
+  operational:
+    - num_runway_events
+    - num_taxiway_events
+    - num_parking_changes
+    - ground_complexity
+
+# Model Parameters
+models:
+  isolation_forest:
+    contamination: 0.05  # Expected proportion of anomalies (5%)
+    n_estimators: 100
+    max_samples: 256
+    random_state: 42
+  
+  one_class_svm:
+    nu: 0.05  # Upper bound on fraction of outliers
+    kernel: 'rbf'
+    gamma: 'auto'
+  
+  lof:
+    n_neighbors: 20
+    contamination: 0.05
+  
+  hdbscan:
+    min_cluster_size: 50
+    min_samples: 10
+  
+  autoencoder:
+    encoding_dim: 32
+    epochs: 50
+    batch_size: 256
+    validation_split: 0.2
+
+# Evaluation Parameters
+evaluation:
+  top_n_anomalies: 100  # Number of top anomalies to inspect
+  quantile_threshold: 0.99  # For statistical baseline
+
+# Visualization Parameters
+visualization:
+  figure_size: [12, 8]
+  dpi: 300
+  style: 'seaborn-v0_8-darkgrid'
