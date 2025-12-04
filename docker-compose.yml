@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    image: kafka-2.3.0-alpine-arm64
+    container_name: zk
+    environment:
+      - KAFKAHOME=/home
+    command:
+      [
+        "/home/kafka/bin/zookeeper-server-start.sh",
+        "/home/kafka/config/zookeeper.properties",
+      ]
+    ports:
+      - "2181:2181"
+    volumes:
+      - zk-data:/home/kafka/data/zookeeper
+
+  broker:
+    image: kafka-2.3.0-alpine-arm64
+    platform: linux/arm64
+    container_name: broker
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKAHOME=/home
+    command: ["/usr/local/bin/kafka-start"]
+    ports:
+      - "9092:9092" # for in-cluster
+      - "29092:29092" # for local machine
+    volumes:
+      - broker-data:/home/kafka/data/server
+    stop_grace_period: 40s
+    restart: unless-stopped
+
+volumes:
+  zk-data:
+  broker-data:
